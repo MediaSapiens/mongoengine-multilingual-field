@@ -4,16 +4,16 @@ from setuptools import setup
 
 setup(
     name='mongoengine-multilingual-field',
-    version='0.3',
+    version='0.4',
     description='MongoEngine field to store MultilingualString class '
         'from i18n-string project',
-    url='https://github.com/lig/mongoengine-multilingual-field',
-    author='Serge Matveenko',
-    author_email='s@matveenko.ru',
+    url='https://github.com/MediaSapiens/mongoengine-multilingual-field',
+    author='Serge Matveenko, Yehor Nazarkin',
+    author_email='yehor@mediasapiens.co',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Programming Language :: Python',
         'License :: OSI Approved :: BSD License',
     ],
     packages=['multilingual_field'],
-    install_requires=['i18n_string>=0.2.1', 'mongoengine'])
+    install_requires=['Flask-Babel>=0.8', 'mongoengine'])
