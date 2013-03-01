@@ -1,6 +1,29 @@
 from collections import Mapping
+from flask import current_app
 from flask.ext.babel import get_locale
 from mongoengine.base import ComplexBaseField
+
+
+def get_language(default='de'):
+    try:
+        default = current_app.config['BABEL_DEFAULT_LOCALE']
+    except:
+        pass
+
+    return get_locale() and get_locale().language or default
+
+
+def rotate_locales(translations, language):
+
+    try:
+        languages = current_app.config['ACCEPT_LANGUAGES']
+    except:
+        languages = ['de', 'en', 'ru']
+
+    rotation = languages.insert(0, language)
+
+    trans = [translations.get(lang) for lang in rotation]
+    return len(trans) and trans[0] or u''
 
 
 class LocaleDict(dict):
@@ -31,10 +54,9 @@ class LocaleDict(dict):
 
 class MultilingualString(unicode):
 
-    def __new__(cls, translations=None, default_language='en'):
-        language = get_locale() and get_locale().language or default_language
+    def __new__(cls, translations=None, language='de'):
         translations = LocaleDict(translations)
-        value = translations.get(language, u'')
+        value = rotate_locales(translations, language)
         self = unicode.__new__(cls, value)
         self.language = language
         self.translations = translations
@@ -73,7 +95,7 @@ class MultilingualStringField(ComplexBaseField):
             elif isinstance(value, basestring):
                 old_value = instance._data.get(self.db_field)
                 if old_value is None:
-                    language = get_locale() and get_locale().language or 'en'
+                    language = get_language()
                     value = MultilingualString({language: value})
                 else:
                     # @todo: improve MultilingualString to handle updates
