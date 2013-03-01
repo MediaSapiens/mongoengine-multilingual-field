@@ -20,9 +20,9 @@ def rotate_locales(translations, language):
     except:
         languages = ['de', 'en', 'ru']
 
-    rotation = languages.insert(0, language)
+    languages.insert(0, language)
 
-    trans = [translations.get(lang) for lang in rotation]
+    trans = [translations.get(lang) for lang in languages]
     return len(trans) and trans[0] or u''
 
 
