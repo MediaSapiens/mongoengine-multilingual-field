@@ -13,17 +13,18 @@ def get_language(default='de'):
     return get_locale() and get_locale().language or default
 
 
+# TODO: optimize rotation
 def rotate_locales(translations, language):
-
-    try:
-        languages = current_app.config['ACCEPT_LANGUAGES']
-    except:
-        languages = ['de', 'en', 'ru']
-
-    languages.insert(0, language)
-
-    trans = [translations.get(lang) for lang in languages]
-    return len(trans) and trans[0] or u''
+    trans = translations.get(language)
+    if trans is None:
+        for lang in current_app.config['ACCEPT_LANGUAGES']:
+            trans = translations.get(lang)
+            if trans is None:
+                continue
+            else:
+                return trans
+    else:
+        return trans
 
 
 class LocaleDict(dict):
