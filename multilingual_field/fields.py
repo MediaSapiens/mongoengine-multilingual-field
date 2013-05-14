@@ -84,20 +84,20 @@ class MultilingualStringField(ComplexBaseField):
         return [{'lang': k, 'value': v} for k, v in value.translations.items()]
 
     def to_python(self, value):
-        return MultilingualString(
-            {item['lang']: item['value'] for item in value})
+        if isinstance(value, basestring):
+            value_dict = {get_language(): value}
+        else:
+            value_dict = {item['lang']: item['value'] for item in value}
+        return MultilingualString(value_dict)
 
     def __set__(self, instance, value):
-
         if not isinstance(value, MultilingualString):
-
             if isinstance(value, Mapping):
                 value = MultilingualString(value)
             elif isinstance(value, basestring):
                 old_value = instance._data.get(self.db_field)
                 if old_value is None:
-                    language = get_language()
-                    value = MultilingualString({language: value})
+                    value = MultilingualString({get_language(): value})
                 else:
                     # @todo: improve MultilingualString to handle updates
                     old_value.translations[old_value.language] = value
